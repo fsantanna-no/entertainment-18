@@ -205,7 +205,7 @@ We employed a \emph{live code rewrite}, i.e., starting from the original
 codebase in C++, we reimplemented it piece-by-piece in \CEU without breaking
 the game compilation and execution.
 
-\begin{figure*}[t]
+\begin{figure}[t]
 {\scriptsize
 \begin{verbatim}
      Path            Ceu    C++  Ceu/C++   Description
@@ -228,7 +228,7 @@ the game compilation and execution.
 \caption{The Pingus codebase directory tree.
 \label{tab.tree}
 }
-\end{figure*}
+\end{figure}
 
 The rest of the paper is organized as follows:
 Section~\ref{sec.codebase} gives an overview of the Pingus codebases in C++ and
@@ -448,6 +448,15 @@ end
 }
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=350px]{double-click}
+\caption{State machine for detecting double-clicks in the
+         \emph{Armageddon button}.
+\label{fig.armageddon.fsm}
+}
+\end{figure}
+
 Figure~\ref{lst.armageddon}.a shows the C++ implementation for the class
 \code{ArmageddonButton} with methods for rendering the button and handling
 mouse and timer events.
@@ -487,15 +496,6 @@ Also, even though the state variables are private, unrelated methods such as
 \code{draw}, which is defined in middle of the class (ln 10--12), can
 potentially access them.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=250px]{double-click}
-\caption{State machine for detecting double-clicks in the
-         \emph{Armageddon button}.
-\label{fig.armageddon.fsm}
-}
-\end{figure}
-
 \CEU supports structured constructs to deal with events, aiming to eradicate
 explicit manipulation of state variables for control-flow purposes.
 %
@@ -524,6 +524,22 @@ In particular, locals and loops cannot persist across invocations.
 
 \subsubsection{Case Study: The \emph{Bomber Action} Animation Sequence}
 \label{sec.pats.fsms.2}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=120px]{bomber-01}
+\caption{ Assigning the \emph{Bomber action} to a pingu.
+\label{fig.bomber.action}
+}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=250px]{states}
+\caption{ State machine for the \emph{Bomber animation} sequence.
+\label{fig.bomber.fsm}
+}
+\end{figure}
 
 The player may assign actions to specific pingus, as illustrated in
 Figure~\ref{fig.bomber.action}.
@@ -555,38 +571,7 @@ follows%
 %}
 %\end{figure}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=120px]{bomber-01}
-\caption{ Assigning the \emph{Bomber action} to a pingu.
-\label{fig.bomber.action}
-}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{states}
-\caption{ State machine for the \emph{Bomber animation} sequence.
-\label{fig.bomber.fsm}
-}
-\end{figure}
-
-\begin{figure}[t]
-\begin{verbatim}
-Action       Ceu    C++   Explicit State
----------   ----   ----   -----------------
-Bomber        23     50   4 state variables
-Bridger       75    100   2 state variables
-Drown          6     15   1 state variable
-Exiter         7     22   2 state variables
-Splashed       6     19   2 state variables
-\end{verbatim}
-\caption{Pingus actions in \CEU and C++ in terms of \locs and state variables.
-\label{tab.actions}
-}
-\end{figure}
-
-\begin{figure*}[!t]
+\begin{figure}[!t]
 \begin{minipage}[t]{0.50\linewidth}
 \begin{lstlisting}[numbers=right]
 Bomber::Bomber (Pingu* p) :
@@ -698,7 +683,7 @@ end
 \caption{ The \emph{Bomber action} sequence.
 \label{lst.bomber}
 }
-\end{figure*}
+\end{figure}
 
 In C++, the class \code{Bomber} in Figure~\ref{lst.bomber}.a defines the
 callbacks \code{draw} and \code{update} to manage the state machine of
@@ -781,6 +766,23 @@ machines with subclasses describing each possible state~\cite{games.patterns}.
 However, this approach is not fundamentally different from Pingus' use of
 \code{switch} or \code{if} branches to decode state.
 
+\begin{figure}[t]
+{\footnotesize
+\begin{verbatim}
+Action       Ceu    C++   Explicit State
+---------   ----   ----   -----------------
+Bomber        23     50   4 state variables
+Bridger       75    100   2 state variables
+Drown          6     15   1 state variable
+Exiter         7     22   2 state variables
+Splashed       6     19   2 state variables
+\end{verbatim}
+\caption{Pingus actions in \CEU and C++ in terms of \locs and state variables.
+\label{tab.actions}
+}
+}
+\end{figure}
+
 Pingus supports 16 actions in the game.
 Five of them implement at least one state machine and are considerable smaller
 in \CEU in terms of \locs (Figure~\ref{tab.actions}).
@@ -812,7 +814,7 @@ Figure~\ref{lst.bomber}).
 
 \subsubsection{ Transition from \emph{Story}  to \emph{Credits} Screen}
 
-\begin{figure*}[t]
+\begin{figure}[h!]
 \begin{minipage}[t]{0.50\linewidth}
 \begin{lstlisting}[numbers=right]
 StoryDot::StoryDot(FileReader& reader) :
@@ -908,15 +910,7 @@ end
 \caption{ Transition from \emph{Story} to \emph{Credits screen}.
 \label{lst.story}
 }
-\end{figure*}
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\textwidth]{continuation}
-\caption{ Continuation (C++) vs Direct (\CEU) Styles.
-\label{fig.story}
-}
-\end{figure*}
+\end{figure}
 
 The campaign world map has clickable blue dots in the two extremes of the
 map road to show introductory and closing ambience stories, respectively.
@@ -951,15 +945,15 @@ After showing the story, we check the returned values (ln 6) to perhaps show
 the \code{Credits} screen (ln 8).
 The enclosing loop restores the \code{Worldmap} and repeats the process.
 
-\begin{figure*}[t]
+\begin{figure}[!t]
 \centering
-\includegraphics[width=\textwidth]{hierarchy}
-\caption{Dispatching chain for \code{update}.
-\label{fig.hier}
+\includegraphics[width=\textwidth]{continuation}
+\caption{ Continuation (C++) vs Direct (\CEU) Styles.
+\label{fig.story}
 }
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \begin{minipage}[t]{0.45\linewidth}
 \begin{lstlisting}[numbers=right]
 class Bomber : public Action {
@@ -1011,7 +1005,7 @@ end
 \caption{ \emph{Bomber action} \code{draw} and \code{update} dispatching.
 \label{lst.hier}
 }
-\end{figure*}
+\end{figure}
 
 Figure~\ref{fig.story} illustrates the \emph{continuation-passing style} of
 C++ and the \emph{direct style} of \CEU for screen transitions:
@@ -1093,49 +1087,13 @@ actions during gameplay (e.g., \emph{walking} to \emph{falling} and back to
 
 \subsubsection{Case Study: \emph{Bomber Action} \Code{draw} and \Code{update} Dispatching}
 
-\begin{figure*}[t]
-\begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=right]
-GameSession::GameSession(<...>) :
-  <...>
-{
-  <...>    // these widgets are always active...
-  btpanel  = new ButtonPanel(<...>);
-  pcounter = new PingusCounter(<...>);
-  smallmap = new SmallMap(<...>);
-  <...>
-  uimgr->add(btpanel);  // ...but are added
-  uimgr->add(pcounter); //  dynamically to the
-  uimgr->add(smallmap); //  dispatching hierarchy
-  <...>
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{hierarchy}
+\caption{Dispatching chain for \code{update}.
+\label{fig.hier}
 }
-\end{lstlisting}
-\centering\small{\ax Implementation in C++}
-\end{minipage}
-%
-\begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[xleftmargin=2em]
-code/await Game (void) do
-  <...> // other coexisting functionality
-  spawn ButtonPanel(<...>);
-  spawn PingusCounter(<...>);
-  spawn SmallMap(<...>);
-  <...> // other coexisting functionality
-end
-
-
-
-
-
-.
-\end{lstlisting}
-\centering\small{\bx Implementation in \CEU}
-\end{minipage}
-%\rule{8.4cm}{0.37pt}
-\caption{ Managing the UI widgets lifecycle.
-\label{lst.ui}
-}
-\end{figure*}
+\end{figure}
 
 In C++, the class \code{Bomber} in Figure~\ref{lst.hier}.a declares a
 \code{sprite} member (ln 3) to handle its animation frames.
@@ -1246,7 +1204,7 @@ code removal.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{game-session-arrows}
+\includegraphics[width=250px]{game-session-arrows}
 \caption{UI children with static lifespan.
 \label{fig.ui}
 }
@@ -1255,6 +1213,50 @@ code removal.
 Figure~\ref{fig.ui} shows the game UI widgets with action buttons, score
 counters, and a small map, all coexisting with the game screen during its
 whole lifespan.
+
+\begin{figure}[t]
+\begin{minipage}[t]{0.50\linewidth}
+\begin{lstlisting}[numbers=right]
+GameSession::GameSession(<...>) :
+  <...>
+{
+  <...>    // these widgets are always active...
+  btpanel  = new ButtonPanel(<...>);
+  pcounter = new PingusCounter(<...>);
+  smallmap = new SmallMap(<...>);
+  <...>
+  uimgr->add(btpanel);  // ...but are added
+  uimgr->add(pcounter); //  dynamically to the
+  uimgr->add(smallmap); //  dispatching hierarchy
+  <...>
+}
+\end{lstlisting}
+\centering\small{\ax Implementation in C++}
+\end{minipage}
+%
+\begin{minipage}[t]{0.50\linewidth}
+\begin{lstlisting}[xleftmargin=2em]
+code/await Game (void) do
+  <...> // other coexisting functionality
+  spawn ButtonPanel(<...>);
+  spawn PingusCounter(<...>);
+  spawn SmallMap(<...>);
+  <...> // other coexisting functionality
+end
+
+
+
+
+
+.
+\end{lstlisting}
+\centering\small{\bx Implementation in \CEU}
+\end{minipage}
+%\rule{8.4cm}{0.37pt}
+\caption{ Managing the UI widgets lifecycle.
+\label{lst.ui}
+}
+\end{figure}
 
 In C++, the widgets are created in the constructor of the class
 \code{GameSession} in Figure~\ref{lst.ui}.a (ln 5--7), added to a UI container
@@ -1284,7 +1286,38 @@ programmers:
       Section~\ref{sec.pats.lifespan.2}).
 \end{itemize}
 
-\begin{figure*}[t]
+In \CEU, the UI entities that coexist are simply created in the same lexical
+block of the \code{Game} abstraction in Figure~\ref{lst.ui}.b (ln 3--5).
+%
+Since abstractions can react independently, they do not require a dispatching
+container.
+%
+Lexical lifespan never requires containers, allocation and deallocation, or
+explicit references.
+In addition, all required memory is known at compile time, similarly to
+stack-allocated local variables.
+%
+The \emph{Bomber action} of Section~\ref{sec.pats.fsms.2} also relies on
+lexical scope to delimit the lifespan of the explosion sprite into a single
+frame (Figure~\ref{lst.bomber}, ln 19--25).
+
+\subsubsection{Case Study: Dynamic Pingus Lifecycle}
+\label{sec.pats.lifespan.2}
+
+%\begin{figure}[t]
+%\centering
+%\includegraphics[width=\columnwidth]{pingus_create_die-anim}
+%\caption{Creation and death of pingus.
+%\label{fig.pingus_create_die}
+%}
+%\end{figure}
+
+A pingu is a dynamic entity created periodically and destroyed under certain
+conditions, such as falling from a high altitude.%
+\footnote{Death of pingus animation: \url{github.com/an000/p/#5} }
+%
+
+\begin{figure}[t]
 \begin{minipage}[t]{0.50\linewidth}
 \begin{lstlisting}[numbers=right]
 Pingu* PinguHolder::create_pingu (<...>) {
@@ -1340,38 +1373,7 @@ end
 \caption{ Managing the pingus lifecycle.
 \label{lst.pingus}
 }
-\end{figure*}
-
-In \CEU, the UI entities that coexist are simply created in the same lexical
-block of the \code{Game} abstraction in Figure~\ref{lst.ui}.b (ln 3--5).
-%
-Since abstractions can react independently, they do not require a dispatching
-container.
-%
-Lexical lifespan never requires containers, allocation and deallocation, or
-explicit references.
-In addition, all required memory is known at compile time, similarly to
-stack-allocated local variables.
-%
-The \emph{Bomber action} of Section~\ref{sec.pats.fsms.2} also relies on
-lexical scope to delimit the lifespan of the explosion sprite into a single
-frame (Figure~\ref{lst.bomber}, ln 19--25).
-
-\subsubsection{Case Study: Dynamic Pingus Lifecycle}
-\label{sec.pats.lifespan.2}
-
-%\begin{figure}[t]
-%\centering
-%\includegraphics[width=\columnwidth]{pingus_create_die-anim}
-%\caption{Creation and death of pingus.
-%\label{fig.pingus_create_die}
-%}
-%\end{figure}
-
-A pingu is a dynamic entity created periodically and destroyed under certain
-conditions, such as falling from a high altitude.%
-\footnote{Death of pingus animation: \url{github.com/an000/p/#5} }
-%
+\end{figure}
 
 In C++, the class \code{PinguHolder} in Figure~\ref{lst.pingus}.a is a
 container that holds all alive pingus.
@@ -1398,7 +1400,7 @@ Hence, entities with dynamic lifespan always require explicit matching
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{pool}
+\includegraphics[width=250px]{pool}
 \caption{Lifespan of dynamic instances.
 \label{fig.pool}
 }
