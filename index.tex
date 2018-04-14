@@ -19,11 +19,11 @@
     emit, end, escape, event, every, finalize, hor, implementation, in,
     input, interface, loop, min, native, new, nohold, not, or, output, par,
     pool, pure, return, s, signal, spawn, tag, then, this, traverse, until,
-    code, public, private
+    code, public, private,
     var, watching, when, with},
 }
 \lstset{
-  basicstyle=\ttfamily,
+  basicstyle=\scriptsize\ttfamily,
   captionpos=b,
   columns=flexible,
   commentstyle=\rmfamily\itshape,
@@ -34,7 +34,7 @@
   language=ceu,
   mathescape=true,
   numbersep=4pt,
-  numberstyle=\scriptsize,
+  numberstyle=\tiny,
   %upquote=true,
 }
 
@@ -206,23 +206,25 @@ codebase in C++, we reimplemented it piece-by-piece in \CEU without breaking
 the game compilation and execution.
 
 \begin{figure*}[t]
+{\scriptsize
 \begin{verbatim}
-      Path              Ceu      C++   Ceu/C++    Description
-      ------------     ----     ----     ----     --------------------------------------------
- 1    game/            2064     2268     0.91     the main gameplay
- 2      ./              710      679     1.05         main functionality
- 3      objs/           470      478     0.98         world objects (tiles, traps, etc)
- 4      pingu/          884     1111     0.80         pingu behaviors
- 5        ./            343      458     0.75             main functionality
- 6        actions/      541      653     0.83             pingu actions (bomber, climber, etc)
- 7    worldmap/         468      493     0.95     campaign worldmap
- 8    screens/         1109     1328     0.84     menus and screens
- 9        option/       347      357     0.97         option menu
-10        others/       762      971     0.78         other menus and screens
-11    misc/              56       46     1.22     miscellaneous functionality
-                       ----     ----     ----
-                       3697     4135     0.89
+     Path            Ceu    C++  Ceu/C++   Description
+     ------------   ----   ----   ----     --------------------------------------
+ 1   game/          2064   2268   0.91     the main gameplay
+ 2     ./            710    679   1.05      main functionality
+ 3     objs/         470    478   0.98      world objects (tiles, traps, etc)
+ 4     pingu/        884   1111   0.80      pingu behaviors
+ 5       ./          343    458   0.75       main functionality
+ 6       actions/    541    653   0.83       pingu actions (bomber, climber, etc)
+ 7   worldmap/       468    493   0.95     campaign worldmap
+ 8   screens/       1109   1328   0.84     menus and screens
+ 9       option/     347    357   0.97      option menu
+10       others/     762    971   0.78      other menus and screens
+11   misc/            56     46   1.22     miscellaneous functionality
+                     ----   ----   ----
+                     3697   4135   0.89
 \end{verbatim}
+}
 \caption{The Pingus codebase directory tree.
 \label{tab.tree}
 }
@@ -359,61 +361,62 @@ In Pingus, a double click in the \emph{Armageddon button} at the bottom right
 of the screen literally explodes all pingus.%
 \footnote{Double click animation: \url{github.com/an000/p/#1} }
 
-\begin{figure*}[t]
-\begin{minipage}[t]{0.55\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{figure}[h]
+\begin{minipage}[h]{0.55\linewidth}
+\begin{lstlisting}[numbers=right]
 ArmageddonButton::ArmageddonButton(<...>):
-    RectComponent(<...>),
-    pressed(false); // button initially not pressed
-    press_time(0);    // how long since 1st click?
-    <...>
+  RectComponent(<...>),
+  pressed(false); // button is not initially pressed
+  press_time(0);  // how long since 1st click?
+  <...>
 {
-    <...>
+  <...>
 }
 
 void ArmageddonButton::draw (<...>) {
-    <...>
+  <...>
 }
 
 void ArmageddonButton::update (float delta) {
-    <...>
-    if (pressed) {
-        press_time += delta;
-        if (press_time > 1.0f) {
-            pressed = false; // give up, 1st click was
-            press_time = 0;  //         too long ago
-        }
-    } else {
-        <...>
-        press_time = 0;
+  <...>
+  if (pressed) {
+    press_time += delta;
+    if (press_time > 1.0f) {
+      pressed = false; // give up, 1st click was
+      press_time = 0;  //     too long ago
     }
+  } else {
+    <...>
+    press_time = 0;
+  }
 }
 
 void ArmageddonButton::on_click (<...>) {
-    if (pressed) {
-        send_armageddon_event();
-    } else {
-        pressed = true;
-    }
+  if (pressed) {
+    send_armageddon_event();
+  } else {
+    pressed = true;
+  }
 }
 \end{lstlisting}
 \centering\small{\ax Implementation in C++}
-\end{minipage}
+\end{minipage}%
 %
-\begin{minipage}[t]{0.45\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{minipage}[h]{0.45\linewidth}
+%\begin{lstlisting}
+\begin{lstlisting}[xleftmargin=2em]
 do
-    var RectComponent but = <...>;
-    <...>
-    loop do
-        await but.on_click;
-        watching 1s do
-            await but.on_click;
-            break;
-        end
+  var RectComponent but = <...>;
+  <...>
+  loop do
+    await but.on_click;
+    watching 1s do
+      await but.on_click;
+      break;
     end
-    <...>
-    emit game.armageddon;
+  end
+  <...>
+  emit game.armageddon;
 end
 
 
@@ -438,12 +441,12 @@ end
 .
 \end{lstlisting}
 \centering\small{\bx Implementation in \CEU}
-\end{minipage}
+\end{minipage}%
 %\rule{8.4cm}{0.37pt}
 \caption{ Detecting double-clicks in the \emph{Armageddon button}.
 \label{lst.armageddon}
 }
-\end{figure*}
+\end{figure}
 
 Figure~\ref{lst.armageddon}.a shows the C++ implementation for the class
 \code{ArmageddonButton} with methods for rendering the button and handling
@@ -585,14 +588,14 @@ Splashed       6     19   2 state variables
 
 \begin{figure*}[!t]
 \begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{lstlisting}[numbers=right]
 Bomber::Bomber (Pingu* p) :
   <...>
-  sprite(<...>),          // bomber sprite
-  sound_played(false),    // tracks state 2
-  particle_thrown(false), // tracks state 3
-  colmap_exploded(false), // tracks state 3
-  gfx_exploded(false)     // tracks state 4
+  spr(<...>),         // bomber sprite
+  sound_ok(false),    // tracks state 2
+  particle_ok(false), // tracks state 3
+  colmap_ok(false),   // tracks state 3
+  gfx_ok(false)       // tracks state 4
 {
   <...>
   // 1. plays a "Oh no!" sound.
@@ -600,64 +603,64 @@ Bomber::Bomber (Pingu* p) :
 }
 
 void Bomber::update () {
-  sprite.update();
+  spr.update();
   <...>   // pingu movement
 
   // 2. plays a "Bomb!" sound.
-  if (sprite.frame()==10 && !sound_played) {
-    sound_played = true;
+  if (spr.frame()==10 && !sound_ok) {
+    sound_ok = true;
     play_sound("plop");
   }
 
   // 3. particles, terrain, explosion sprite
-  if (sprite.frame()==13 && !particle_thrown) {
-    particle_thrown = true;
-    get_world()->get_particles()->add(...);
+  if (spr.frame()==13 && !particle_ok) {
+    particle_ok = true;
+    world()->get_particles()->add(...);
   }
-  if (sprite.frame()==13 && !colmap_exploded) {
-    colmap_exploded = true;
-    get_world()->remove(bomber_radius, <...>);
+  if (spr.frame()==13 && !colmap_ok) {
+    colmap_ok = true;
+    world()->remove(radius, <...>);
   }
 
   // 5. kills the Pingu
-  if (sprite.is_finished ()) {
-    pingu->set_status(PS_DEAD);
+  if (spr.is_finished ()) {
+    pingu->status(DEAD);
   }
 }
 
 void Bomber::draw (SceneContext& gc) {
   // 3. particles, terrain, explosion sprite
   // 4. tick: hides the explosion sprite
-  if (sprite.frame()==13 && !gfx_exploded) {
-    gfx_exploded = true;
+  if (spr.frame()==13 && !gfx_ok) {
+    gfx_ok = true;
     gc.color().draw(explo_surf, <...>);
   }
-  gc.color().draw(sprite, pingu->get_pos());
+  gc.color().draw(spr, pingu->get_pos());
 }
 \end{lstlisting}
 \centering\small{\ax Implementation in C++}
 \end{minipage}
 %
 \begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{lstlisting}[xleftmargin=2em]
 code/await Bomber (void) -> ActionName
 do
   <...>
   spawn Mover(); // movement in background
-  var Sprite sprite = spawn Sprite(<...>);
+  var Sprite spr = spawn Sprite(<...>);
                // frame animation in background
-  watching sprite do
+  watching spr do
     // 1. plays a "Oh no!" sound.
     {play_sound("ohno")};
 
     // 2. plays a "Bomb!" sound.
-    await game.update until sprite.frame == 10;
+    await game.update until spr.frame==10;
     {play_sound("plop")};
 
     // 3. particles, terrain, explosion sprite
-    await game.update until sprite.frame == 13;
-    spawn PinguParticles(<...>) in particles;
-    call Game_Remove({&bomber_radius}, <...>);
+    await game.update until spr.frame==13;
+    spawn Particles(<...>) in particles;
+    call Game_Remove({&radius}, <...>);
     do
       <...>
       spawn Sprite(<...>); // explosion
@@ -811,8 +814,8 @@ Figure~\ref{lst.bomber}).
 
 \begin{figure*}[t]
 \begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
-StoryDot::StoryDot(const FileReader& reader) :
+\begin{lstlisting}[numbers=right]
+StoryDot::StoryDot(FileReader& reader) :
   show_credits(false), // do not show by default
 {
   <...>
@@ -821,7 +824,7 @@ StoryDot::StoryDot(const FileReader& reader) :
 
 void StoryDot::on_click() {
   <...>
-  push_screen(<StoryScreen>(show_credits));
+  push(<StoryScreen>(show_credits));
   <...>
 }
 
@@ -845,9 +848,9 @@ void StoryScreenComp::next_text() {
       <...>
     } else {
       if (show_credits) {
-        replace_screen(<Credits>(<...>));
+        replace(<Credits>(<...>));
       } else {
-        pop_screen();
+        pop();
       }
     }
   }
@@ -857,13 +860,13 @@ void StoryScreenComp::next_text() {
 \end{minipage}
 %
 \begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{lstlisting}[xleftmargin=2em]
 loop do
   var int ret = await Worldmap();
-  if ret==STORY_CREDITS or ret==STORY_BACK then
+  if ret==CREDITS or ret==BACK then
     <...>
     var bool is_click = await Story();
-    if is_click and ret==STORY_CREDITS then
+    if is_click and ret==CREDITS then
       <...>
       await Credits();
     end
@@ -957,36 +960,36 @@ The enclosing loop restores the \code{Worldmap} and repeats the process.
 \end{figure*}
 
 \begin{figure*}[t]
-\begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{minipage}[t]{0.45\linewidth}
+\begin{lstlisting}[numbers=right]
 class Bomber : public Action {
-    <...>
-    Sprite sprite;
+  <...>
+  Sprite sprite;
 }
 
 Bomber::Bomber (<...>) : <...> {
-    sprite.load(<...>);
-    <...>
+  sprite.load(<...>);
+  <...>
 }
 
 void Bomber::update () {
-    sprite.update();
+  sprite.update();
 }
 
 void Bomber::draw () {
-    <...>
-    sprite.draw();
+  <...>
+  sprite.draw();
 }
 \end{lstlisting}
 \centering\small{\ax Implementation in C++}
 \end{minipage}
 %
-\begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{minipage}[t]{0.55\linewidth}
+\begin{lstlisting}[xleftmargin=2em]
 code/await Bomber (void) -> ActionName do
-    <...>
-    var Sprite sprite = spawn Sprite(<...>);
-    <...>
+  <...>
+  var Sprite sprite = spawn Sprite(<...>);
+  <...>
 end
 
 
@@ -1091,33 +1094,33 @@ actions during gameplay (e.g., \emph{walking} to \emph{falling} and back to
 \subsubsection{Case Study: \emph{Bomber Action} \Code{draw} and \Code{update} Dispatching}
 
 \begin{figure*}[t]
-\begin{minipage}[t]{0.54\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{minipage}[t]{0.50\linewidth}
+\begin{lstlisting}[numbers=right]
 GameSession::GameSession(<...>) :
-    <...>
+  <...>
 {
-    <...>      // these widgets are always active...
-    btpanel  = new ButtonPanel(<...>);
-    pcounter = new PingusCounter(<...>);
-    smallmap = new SmallMap(<...>);
-    <...>
-    uimgr->add(btpanel);  // ...but are added
-    uimgr->add(pcounter); //  dynamically to the
-    uimgr->add(smallmap); //  dispatching hierarchy
-    <...>
+  <...>    // these widgets are always active...
+  btpanel  = new ButtonPanel(<...>);
+  pcounter = new PingusCounter(<...>);
+  smallmap = new SmallMap(<...>);
+  <...>
+  uimgr->add(btpanel);  // ...but are added
+  uimgr->add(pcounter); //  dynamically to the
+  uimgr->add(smallmap); //  dispatching hierarchy
+  <...>
 }
 \end{lstlisting}
 \centering\small{\ax Implementation in C++}
 \end{minipage}
 %
-\begin{minipage}[t]{0.46\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{minipage}[t]{0.50\linewidth}
+\begin{lstlisting}[xleftmargin=2em]
 code/await Game (void) do
-    <...> // other coexisting functionality
-    spawn ButtonPanel(<...>);
-    spawn PingusCounter(<...>);
-    spawn SmallMap(<...>);
-    <...> // other coexisting functionality
+  <...> // other coexisting functionality
+  spawn ButtonPanel(<...>);
+  spawn PingusCounter(<...>);
+  spawn SmallMap(<...>);
+  <...> // other coexisting functionality
 end
 
 
@@ -1149,7 +1152,7 @@ chain of 7 method dispatches (Figure~\ref{fig.hier}):
 %
 \begin{enumerate}
 %\setlength\itemsep{0em}
-\item \code{ScreenManager::display} in the main game loop calls
+\item \code{ScreenManager::display} in the main game loop calls\\
       \code{ScreenManager::update} when starting a new frame.
 \item \code{ScreenManager::update} calls \code{screen->update} for the active
       game screen (i.e., a \code{GameSession} instance, considering the screen
@@ -1283,24 +1286,24 @@ programmers:
 
 \begin{figure*}[t]
 \begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{lstlisting}[numbers=right]
 Pingu* PinguHolder::create_pingu (<...>) {
-    <...>
-    Pingu* pingu = new Pingu (<...>);
-    pingus.push_back(pingu);
-    <...>
+  <...>
+  Pingu* pingu = new Pingu (<...>);
+  pingus.push_back(pingu);
+  <...>
 }
 
 void PinguHolder::update() {
-    <...>
-    while(pingu != pingus.end()) {
-        (*pingu)->update();
-        if ((*pingu)->get_status() == PS_DEAD) {
-            pingu = pingus.remove(pingu);
-        }
-        <...>
-        ++pingu;
+  <...>
+  while(pingu != pingus.end()) {
+    (*pingu)->update();
+    if ((*pingu)->status() == DEAD) {
+      pingu = pingus.remove(pingu);
     }
+    <...>
+    ++pingu;
+  }
 }
 
 .
@@ -1309,26 +1312,26 @@ void PinguHolder::update() {
 \end{minipage}
 %
 \begin{minipage}[t]{0.50\linewidth}
-\begin{lstlisting}[numbers=left,xleftmargin=3em]
+\begin{lstlisting}[xleftmargin=2em]
 code/await Game (void) do
+  <...>
+  pool[] Pingu pingus;
+  code/await Pingu_Spawn (<...>) do
     <...>
-    pool[] Pingu pingus;
-    code/await Pingu_Spawn (<...>) do
-        <...>
-        spawn Pingu(<...>) in pingus;
-    end
-    <...>   // code invoking Pingu_Spawn
+    spawn Pingu(<...>) in pingus;
+  end
+  <...>   // code invoking Pingu_Spawn
 end
 
 code/await Pingu (<...>) do
-    <...>
-    loop do
-        await game.update;
-        if Pingu_Is_Out_Of_Screen() then
-            <...>
-            escape PS_DEAD;
-        end
+  <...>
+  loop do
+    await game.update;
+    if Pingu_Is_Out_Of_Screen() then
+      <...>
+      escape PS_DEAD;
     end
+  end
 end
 \end{lstlisting}
 \centering\small{\bx Implementation in \CEU}
@@ -1466,7 +1469,7 @@ patterns~\cite{gof}, which are discussed in the context of video games in
 previous work~\cite{games.patterns,games.gof.2015,games.gof.2007}.
 %
 The original Pingus in C++ uses variations of the patterns
-    \emph{state} (Sections~\ref{sec.pats.fsms}~and~\ref{sec.pats.cps}),
+    \emph{state} (Sections~\ref{sec.pats.fsms} and \ref{sec.pats.cps}),
     \emph{visitor} (Sections~\ref{sec.pats.dispatching}~and~\ref{sec.pats.lifespan}), and
     \emph{observer} (to handle events in general)
 as implementation techniques to achieve the desired higher-level
