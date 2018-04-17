@@ -61,8 +61,8 @@
 %\address{California, United States}
 
 \begin{abstract}
-We present a case study of rewriting the video game Pingus from C++ to the
-structured synchronous reactive language \CEU.
+We present a qualitative case study of rewriting the video game Pingus from C++
+to the structured synchronous reactive language \CEU.
 %
 \CEU supports reactive control-flow primitives that eliminate callbacks and let
 programmers write code in direct and sequential style.
@@ -74,7 +74,7 @@ analysis of the proposed implementations in \CEU in comparison to the originals
 in C++.
 %
 We also categorize the behaviors in four recurrent control-flow patterns that
-likely apply to other games.
+likely apply to most games.
 \end{abstract}
 
 \begin{keyword}
@@ -152,38 +152,51 @@ In this sense, callbacks actually disrupt structured programming, becoming
 
 In this work, we advocate structured synchronous reactive programming as a more
 productive alternative for game logic development.
-We present a case study of rewriting Pingus from C++ to the programming
-language \CEU~\cite{ceu.sensys13,ceu.mod15}.
-\CEU has the following general characteristics:
+We present a qualitative case study of rewriting Pingus from C++ to \CEU.
+
+\CEU~\cite{ceu.sensys13,ceu.mod15} is a Esterel-based~\cite{esterel.ieee91}
+programming language that originally targets embedded soft real-time systems.
+It aims to offer a concurrent, safe, and expressive alternative to C with the
+characteristics that follow:
 %
-\begin{itemize}
-%\setlength\itemsep{0em}
-\item \emph{Reactive}: code executes in reactions to events.
-\item \emph{Structured}: code uses structured control-flow mechanisms, such
-      as \code{spawn} and \code{await} (to create and suspend an activity).
-\item \emph{Synchronous}: event reactions never overlap and run atomically and
-      to completion on each activity.
-      There is no implicit preemption or real parallelism, resulting in
-      deterministic execution.
-\end{itemize}
+\begin{description}
+\item [Reactive:] code only executes in reactions to events.
+\item [Structured:] programs use structured control mechanisms, such as
+    \code{spawn} and \code{await} (to create and suspend an activity).
+\item [Synchronous:] reactions run atomically and to completion on each line of
+    execution, i.e., there's no implicit preemption or real parallelism.
+\end{description}
 %
-Structured reactive programming recovers from the inversion of control imposed
-by callbacks and the observer pattern~\cite{rp.deprecating}, letting
-programmers write code in direct and sequential style.
+Structured reactive programming lets developers write code in direct style,
+recovering from the inversion of control imposed by event-driven
+execution~\cite{rp.deprecating,rp.rescala,sync_async.cooperative}.
 %
 %\CEU provides primitives that help describing complex control-flow
 %relationships in the game logic more concisely.
 %
 \CEU supports logical parallelism with a resource-efficient implementation in
-terms of memory and CPU usage~\cite{ceu.sensys13}.
+terms of memory and CPU usage.
 The runtime is single threaded and does not rely on garbage collection for
-memory management.
+memory management~\cite{ceu.sensys13}.
+%
+Previous work in the context of embedded sensor networks evaluates the
+expressiveness of \CEU in comparison to event-driven code in C and attests a
+reduction in source code size (around 25\%) with a small increase in memory
+usage (around 5--10\%)~\cite{ceu.sensys13}.
+%
+\CEU has also been used in the context of multimedia
+systems~\cite{ceumedia.webmedia16} and games~\cite{ceu.mod15}.
 
 Our case study shows gains in productivity for six selected behaviors in the
 game logic of Pingus rewritten in \CEU.
 We present an in-depth qualitative analysis of the proposed solutions in
 comparison to the original implementations in C++.
-We also identify four control-flow patterns that likely apply to other games:
+%
+Not all techniques result in reduction of \locs (especially considering the
+verbose syntax of \CEU), but have other effects such as eliminating shared
+variables and dependencies between classes.
+%
+We also identify four control-flow patterns that likely apply to most games:
         \emph{Finite State Machines},
         \emph{Continuation Passing},
         \emph{Dispatching Hierarchies}, and
@@ -195,15 +208,15 @@ dependency and/or explicit ordering between statements.
 %For instance, consider how a key press stimulus propagates through the game
 %entities and also what happens with them if the stimulus causes the end of the
 %game.
-We focus on a qualitative analysis for the programming techniques that we
-applied during the rewriting process.
-Not all techniques result in reduction of \locs (especially considering the
-verbose syntax of \CEU), but have other effects such as eliminating shared
-variables and dependencies between classes.
-%
+%We focus on a qualitative analysis for the programming techniques that we
+%applied during the rewriting process.
+
 We employed a \emph{live code rewrite}, i.e., starting from the original
 codebase in C++, we reimplemented it piece-by-piece in \CEU without breaking
 the game compilation and execution.
+%
+This approach shows the feasibility of a partial and gradual translation
+between the languages.
 
 \begin{figure}[t]
 {\scriptsize
@@ -221,8 +234,8 @@ the game compilation and execution.
  9       option/     347    357   0.97      option menu
 10       others/     762    971   0.78      other menus and screens
 11   misc/            56     46   1.22     miscellaneous functionality
-                     ----   ----   ----
-                     3697   4135   0.89
+                    ----   ----   ----
+                    3697   4135   0.89
 \end{verbatim}
 }
 \caption{The Pingus codebase directory tree.
@@ -268,19 +281,20 @@ Therefore, we only rewrote 9.186 \locs spread across 126 files%
 %
 In order to only consider relevant code in the analysis, we then removed all
 headers, declarations, trivial getters \& setters, and other innocuous
-statements, resulting 4.135 dense \locs spread across 70 implementation files
-originally written in C++%
+statements, resulting 4.135 condensed \locs spread across 70 implementation
+files originally written in C++%
 \footnotemark[\ref{codebase}].
 %\footnote{C++ codebase: \url{github.com/an000/p/tree/master/all}}.
-We did the same with the implementation in \CEU, resulting in 3.697 dense \locs%
+We did the same with the implementation in \CEU, resulting in 3.697 condensed
+\locs%
 \footnotemark[\ref{codebase}].
 %\footnote{\CEU codebase: \url{github.com/an000/p/tree/master/all}}.
 %
 Figure~\ref{tab.tree} summarizes the effective game logic codebase in the two
 implementations.
 
-Although the analysis in this work is mostly qualitative, the rows with lower
-ratio numbers in Figure~\ref{tab.tree} do correlate with the parts of the game
+Although the analysis in this work is qualitative, the rows with lower ratio
+numbers in Figure~\ref{tab.tree} do correlate with the parts of the game
 logic that we consider more susceptible to structured reactive programming.
 For instance, the \emph{Pingu} behavior (row 4, \emph{ratio 0.80}) contains
 complex animations that are affected by timers, game rules, and user
@@ -313,7 +327,7 @@ progression that cross multiple callback invocations.
 \label{sec.pats}
 
 During the rewriting process, we have identified four abstract cause/effect
-control-flow patterns which likely apply to other games as well:
+control-flow patterns which likely apply to most games:
 
 \begin{enumerate}
 %\setlength\itemsep{0em}
@@ -337,8 +351,8 @@ control-flow patterns which likely apply to other games as well:
 
 We describe six representative game behaviors in detail distributed in the four
 patterns and analyze their implementations in C++ and \CEU.%
-\footnote{Due to space constraints, we omit three other game behaviors and a
-fifth pattern \emph{Signaling Mechanisms}.}
+%\footnote{Due to space constraints, we omit three other game behaviors and a
+%fifth pattern \emph{Signaling Mechanisms}.}
 
 \subsection{Finite State Machines}
 \label{sec.pats.fsms}
@@ -514,12 +528,13 @@ Also, those 7 lines of code \emph{only} detect the double click, leaving the
 actual effect (ln 12) as well as all unrelated code (such as redrawing the
 button) to happen outside the loop.
 
-The \code{await} allows for nested control-flow statements to suspend execution
-while retaining all enclosing state alive, such as local variables and next
-statement to execute.
+The \code{await} statement of \CEU allows for nested control-flow statements to
+suspend execution while retaining all enclosing state alive, such as local
+variables and next statement to execute.
 Then, a subsequent reaction to an event resumes execution normally.
-In contrast, method callbacks have a single entry point at the top level of the
-class, in which only instance members remain active between invocations.
+In contrast, method callbacks in object-oriented programming have a single
+entry point at the top level of the class, in which only instance members
+remain active between invocations.
 In particular, locals and loops cannot persist across invocations.
 
 \subsubsection{Case Study: The \emph{Bomber Action} Animation Sequence}
